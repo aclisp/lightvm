@@ -1,0 +1,30 @@
+{
+    "kind": "Pod",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "lightvm10005"
+    },
+    "spec": {
+        "hostNetwork": true,
+        "nodeSelector": {
+            "master": "true"
+        },
+        "containers": [
+            {
+                "name": "lightvm10005",
+                "image": "61.160.36.122:8080/lightvm:v1.2",
+                "args": [
+                    "/sbin/my_init",
+                    "--ssh-port=10005"
+                ],
+                "imagePullPolicy": "Always",
+                "ports": [
+                    {
+                        "name": "ssh",
+                        "containerPort": 10005
+                    }
+                ]
+            }
+        ]
+    }
+}
