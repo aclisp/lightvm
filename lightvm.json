@@ -35,6 +35,16 @@
                         "name": "data",
                         "mountPath": "/persist/data"
                     }
+                ],
+                "env": [
+                    {
+                        "name": "SERVICE_MONITOR",
+                        "value": "@SERVICE_MONITOR@"
+                    },
+                    {
+                        "name": "SSH_PUBLIC_KEY",
+                        "value": "@SSH_PUBLIC_KEY@"
+                    }
                 ]
             }
         ],
