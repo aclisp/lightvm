@@ -13,17 +13,35 @@
             {
                 "name": "lightvm-@SSH_PORT@",
                 "image": "@REGISTRY@/@IMAGE_NAME@:@IMAGE_VERSION@",
+                "imagePullPolicy": "Always",
                 "args": [
                     "/sbin/my_init",
                     "--ssh-port=@SSH_PORT@"
                 ],
-                "imagePullPolicy": "Always",
                 "ports": [
                     {
                         "name": "ssh",
                         "containerPort": @SSH_PORT@
                     }
+                ],
+                "resources": {
+                    "limits": {
+                        "cpu": "@CPU_CORE@",
+                        "memory": "@MEMORY_G@Gi"
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "name": "data",
+                        "mountPath": "/persist/data"
+                    }
                 ]
+            }
+        ],
+        "volumes": [
+            {
+                "name": "data",
+                "emptyDir": {}
             }
         ]
     }
