@@ -33,13 +33,13 @@
                 "volumeMounts": [
                     {
                         "name": "data",
-                        "mountPath": "/persist/data"
+                        "mountPath": "/data"
                     }
                 ],
                 "env": [
                     {
-                        "name": "SERVICE_MONITOR",
-                        "value": "@SERVICE_MONITOR@"
+                        "name": "DAEMON_MONITOR",
+                        "value": "@DAEMON_MONITOR@"
                     },
                     {
                         "name": "SSH_PUBLIC_KEY",

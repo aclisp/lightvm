@@ -1,15 +1,23 @@
+# See https://github.com/aclisp/baseimage-docker for this base image.
 FROM 61.160.36.122:8080/sigmas/baseimage:0.9.18
 
+# Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 
+# Enable SSH and add a default public key
 RUN rm -f /etc/service/sshd/down
 ADD id_rsa.pub /tmp/id_rsa.pub
 RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm -f /tmp/id_rsa.pub
 
+# Run scripts during container startup
 RUN mkdir -p /etc/my_init.d
-ADD add-service.sh /etc/my_init.d/add-service.sh
+ADD add-daemon.sh /etc/my_init.d/add-daemon.sh
 ADD add-ssh-key.sh /etc/my_init.d/add-ssh-key.sh
 
-RUN sed ??? /etc/passwd
+# Change root home to /data
+RUN mkdir -p /data && \
+    cp -R /root/. /data && \
+    sed -i "s#^\(root:[^:]*:[^:]*:[^:]*:[^:]*:\)[^:]*\(:[^:]*\)#\1/data\2#" /etc/passwd
 
+# Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
