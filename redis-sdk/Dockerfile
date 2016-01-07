@@ -1,4 +1,4 @@
-FROM 61.160.36.122:8080/lightvm:v11
+FROM 61.160.36.122:8080/lightvm:latest
 
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
