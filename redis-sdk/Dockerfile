@@ -31,5 +31,9 @@ RUN buildDeps='gcc libc6-dev make' \
 	&& make -C /usr/src/redis distclean \
 	&& DEBIAN_FRONTEND=noninteractive apt-get purge -y --auto-remove $buildDeps
 
+# for ruby gem.
+RUN gem sources --add https://ruby.taobao.org/ --remove https://rubygems.org/ --remove http://rubygems.org/ \
+    && gem install redis
+
 # Clean up APT when done.
 RUN DEBIAN_FRONTEND=noninteractive apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
