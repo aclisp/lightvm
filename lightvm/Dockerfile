@@ -4,15 +4,18 @@ FROM 61.160.36.122:8080/sigmas/baseimage:0.9.18
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 
-# Enable SSH and add a default public key
+# Install yy-specific components.
+ADD yy_build /yy_build
+RUN /yy_build/config.sh
+
+# Enable SSH and add a default public key.
 RUN rm -f /etc/service/sshd/down
 ADD id_rsa.pub /tmp/id_rsa.pub
 RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm -f /tmp/id_rsa.pub
 
-# Run scripts during container startup
+# Run scripts during container startup.
 RUN mkdir -p /etc/my_init.d
-ADD add-daemon.sh /etc/my_init.d/add-daemon.sh
-ADD add-ssh-key.sh /etc/my_init.d/add-ssh-key.sh
+ADD my_init.d/*.sh /etc/my_init.d/
 
 # Change root home to /data
 RUN mkdir -p /data && \
