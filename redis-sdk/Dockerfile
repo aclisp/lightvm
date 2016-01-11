@@ -1,8 +1,5 @@
 FROM 61.160.36.122:8080/lightvm:latest
 
-# Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]
-
 # Install redis tools
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r redis && useradd -r -g redis redis
