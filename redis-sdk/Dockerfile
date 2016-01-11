@@ -7,6 +7,7 @@ RUN groupadd -r redis && useradd -r -g redis redis
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
 		curl \
+        ruby \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV REDIS_VERSION 3.0.6
@@ -25,7 +26,6 @@ RUN buildDeps='gcc libc6-dev make' \
 	&& rm redis.tar.gz \
 	&& make -C /usr/src/redis \
 	&& make -C /usr/src/redis install \
-	&& rm -r /usr/src/redis \
 	&& apt-get purge -y --auto-remove $buildDeps
 
 # Clean up APT when done.
