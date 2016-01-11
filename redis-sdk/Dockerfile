@@ -26,6 +26,7 @@ RUN buildDeps='gcc libc6-dev make' \
 	&& rm redis.tar.gz \
 	&& make -C /usr/src/redis \
 	&& make -C /usr/src/redis install \
+	&& make -C /usr/src/redis distclean \
 	&& apt-get purge -y --auto-remove $buildDeps
 
 # Clean up APT when done.
