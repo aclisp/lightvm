@@ -34,8 +34,8 @@
                         "mountPath": "/persist"
                     },
                     {
-                        "name": "data",
-                        "mountPath": "/data",
+                        "name": "data-services",
+                        "mountPath": "/data/services",
                         "readOnly": true
                     }
                 ],
@@ -57,9 +57,9 @@
                 "emptyDir": {}
             },
             {
-                "name": "data",
+                "name": "data-services",
                 "hostPath": {
-                    "path": "/data"
+                    "path": "/data/services"
                 }
             }
         ]
