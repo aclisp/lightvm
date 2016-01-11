@@ -17,10 +17,10 @@ RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm -f /tmp/id_rsa.pub
 RUN mkdir -p /etc/my_init.d
 ADD my_init.d/*.sh /etc/my_init.d/
 
-# Change root home to /data
-RUN mkdir -p /data && \
-    cp -R /root/. /data && \
-    sed -i "s#^\(root:[^:]*:[^:]*:[^:]*:[^:]*:\)[^:]*\(:[^:]*\)#\1/data\2#" /etc/passwd
+# Change root home to /persist
+RUN mkdir -p /persist && \
+    cp -R /root/. /persist && \
+    sed -i "s#^\(root:[^:]*:[^:]*:[^:]*:[^:]*:\)[^:]*\(:[^:]*\)#\1/persist\2#" /etc/passwd
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

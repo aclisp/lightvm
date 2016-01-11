@@ -30,8 +30,13 @@
                 },
                 "volumeMounts": [
                     {
+                        "name": "persist",
+                        "mountPath": "/persist"
+                    },
+                    {
                         "name": "data",
-                        "mountPath": "/data"
+                        "mountPath": "/data",
+                        "readOnly": true
                     }
                 ],
                 "env": [
@@ -48,8 +53,14 @@
         ],
         "volumes": [
             {
-                "name": "data",
+                "name": "persist",
                 "emptyDir": {}
+            },
+            {
+                "name": "data",
+                "hostPath": {
+                    "path": "/data"
+                }
             }
         ]
     }

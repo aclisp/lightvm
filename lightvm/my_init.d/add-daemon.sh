@@ -5,6 +5,6 @@
 if [ -n "$DAEMON_MONITOR" ]; then
     IFS=',' read -a array <<< "$DAEMON_MONITOR"
     for element in "${array[@]}"; do
-        ln -s /data/daemon/$element /etc/service/$element
+        ln -s /persist/daemon/$element /etc/service/$element
     done
 fi
