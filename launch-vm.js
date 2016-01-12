@@ -41,7 +41,7 @@ var req = https.request(options, (res) => {
             count++;
             if (count > 30) {
                 clearInterval(timer);
-                console.log('Timeout: check with sigma admin for details.');
+                console.log('Timeout: check with sigma admin for details: ' + pod.status);
                 throw new Error("Timeout");
             }
             checkPod(pod.metadata.name, timer);
