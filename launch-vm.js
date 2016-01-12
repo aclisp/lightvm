@@ -30,6 +30,7 @@ var req = https.request(options, (res) => {
     if (res.statusCode != 201) {
         res.on('data', (chunk) => {
             var status = JSON.parse(chunk);
+            checkPod(unique_name, null, true);
             throw new Error(status.message);
         });
     }
@@ -41,10 +42,11 @@ var req = https.request(options, (res) => {
             count++;
             if (count > 30) {
                 clearInterval(timer);
-                console.log('Timeout: check with sigma admin for details: ' + pod.status);
+                console.log('Timeout: check with sigma admin for details.');
+                checkPod(pod.metadata.name, null, true);
                 throw new Error("Timeout");
             }
-            checkPod(pod.metadata.name, timer);
+            checkPod(pod.metadata.name, timer, false);
         }, 1000);
     });
 });
@@ -54,7 +56,7 @@ req.on('error', (e) => {
 req.write(post_data);
 req.end();
 
-function checkPod(name, timer) {
+function checkPod(name, timer, showStatus) {
     var options = {
         hostname: '61.160.36.122',
         port: 443,
@@ -73,8 +75,13 @@ function checkPod(name, timer) {
         res.on('data', (chunk) => {
             var pod = JSON.parse(chunk);
             console.log('Checking: phase = ' + pod.status.phase);
+            if (showStatus) {
+                console.log(JSON.stringify(pod.status));
+            }
             if (pod.status.phase == "Running") {
-                clearInterval(timer);
+                if (timer) {
+                    clearInterval(timer);
+                }
                 console.log(`Done: go to container with "ssh -p ${process.env.SSH_PORT} root@${process.env.TARGET_IP}"`);
             }
         });
