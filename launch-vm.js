@@ -1,6 +1,7 @@
 const fs = require('fs');
 const https = require('https');
 
+var unique_name = "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" + process.env.SSH_PORT;
 var post_data = fs.readFileSync('lightvm.json', 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")
@@ -11,9 +12,9 @@ post_data = post_data
     .replace(/@MEMORY_G@/g, process.env.MEMORY_G)
     .replace(/@SSH_PUBLIC_KEY@/g, process.env.SSH_PUBLIC_KEY)
     .replace(/@TARGET_IP@/g, process.env.TARGET_IP)
-    .replace(/@UNIQUE_NAME@/g, "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" + process.env.SSH_PORT)
-    .replace(/@DAEMON_MONITOR@/g, "")
-console.log("TX: " + post_data)
+    .replace(/@UNIQUE_NAME@/g, unique_name)
+    .replace(/@DAEMON_MONITOR@/g, "");
+console.log("Data: " + post_data);
 
 var options = {
     hostname: '61.160.36.122',
@@ -25,17 +26,57 @@ var options = {
 };
 
 var req = https.request(options, (res) => {
-    console.log('STATUS_CODE: ', res.statusCode);
-    console.log('HEADERS: ', res.headers);
+    if (res.statusCode != 201) {
+        res.on('data', (chunk) => {
+            var status = JSON.parse(chunk);
+            throw new Error(status.message)
+        });
+    }
     res.on('data', (chunk) => {
-        console.log(`BODY: ${chunk}`);
+        var pod = JSON.parse(chunk);
+        console.log('Created: phase = ' + pod.status.phase);
+        var count = 0;
+        var timer = setInterval(() => {
+            count++;
+            if (count > 20) {
+                clearInterval(timer);
+                console.log('Timeout: check with sigma admin for details.');
+                return;
+            }
+            checkPod(pod.metadata.name, timer);
+        }, 1000);
     });
-    res.on('end', () => {
-        console.log('END: No more data in response.')
-    })
-})
+});
 req.on('error', (e) => {
-    console.log(`ERROR: Problem with request: ${e.message}`);
+    throw e;
 });
 req.write(post_data);
 req.end();
+
+function checkPod(name, timer) {
+    var options = {
+        hostname: '61.160.36.122',
+        port: 443,
+        path: '/api/v1/namespaces/default/pods/' + name,
+        method: 'GET',
+        auth: 'test:test123',
+        rejectUnauthorized: false
+    };
+    var req = https.request(options, (res) => {
+        if (res.statusCode != 200) {
+            res.on('data', (chunk) => {
+                var status = JSON.parse(chunk);
+                throw new Error(status.message)
+            });
+        }
+        res.on('data', (chunk) => {
+            var pod = JSON.parse(chunk);
+            console.log('Checking: phase = ' + pod.status.phase);
+            if (pod.status.phase == "Running") {
+                clearInterval(timer);
+                console.log(`Done: go to container with "ssh -p ${process.env.SSH_PORT} root@${process.env.TARGET_IP}"`);
+            }
+        });
+    });
+    req.end();
+}
