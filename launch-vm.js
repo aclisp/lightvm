@@ -74,7 +74,7 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
             var pod = JSON.parse(chunk);
             console.log('Checking: phase = ' + pod.status.phase);
             if (showStatusAndExit) {
-                console.log(JSON.stringify(pod.status));
+                console.log(JSON.stringify(pod.status, null, 2));
                 throw new Error('Failed to launch: ' + exitReason);
             }
             if (pod.status.phase == "Running") {
