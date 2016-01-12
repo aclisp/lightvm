@@ -42,14 +42,14 @@ var req = https.request(options, (res) => {
             if (count > 20) {
                 clearInterval(timer);
                 console.log('Timeout: check with sigma admin for details.');
-                return;
+                throw new Error("Timeout")
             }
             checkPod(pod.metadata.name, timer);
         }, 1000);
     });
 });
 req.on('error', (e) => {
-    throw e;
+    throw e
 });
 req.write(post_data);
 req.end();
