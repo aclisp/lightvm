@@ -10,5 +10,7 @@ req = req.replace(/@REGISTRY@/g, "61.160.36.122:8080")
     .replace(/@MEMORY_G@/g, process.env.MEMORY_G)
     .replace(/@SSH_PUBLIC_KEY@/g, process.env.SSH_PUBLIC_KEY)
     .replace(/@TARGET_IP@/g, process.env.TARGET_IP)
+    .replace(/@UNIQUE_NAME@/g, "lightvm-"+process.env.TARGET_IP.replace(/\./g, "-")+"-"+process.env.SSH_PORT)
+    .replace(/@DAEMON_MONITOR@/g, "")
 
 console.log(req)
