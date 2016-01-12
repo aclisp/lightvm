@@ -20,7 +20,8 @@ var options = {
     port: 443,
     path: '/api/v1/namespaces/default/pods',
     method: 'POST',
-    auth: 'test:test123'
+    auth: 'test:test123',
+    rejectUnauthorized: false
 };
 
 var req = https.request(options, (res) => {
