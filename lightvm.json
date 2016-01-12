@@ -2,7 +2,10 @@
     "kind": "Pod",
     "apiVersion": "v1",
     "metadata": {
-        "name": "@UNIQUE_NAME@"
+        "name": "@UNIQUE_NAME@",
+        "labels": {
+            "user": "@USER@"
+        }
     },
     "spec": {
         "hostNetwork": true,

@@ -13,6 +13,7 @@ post_data = post_data
     .replace(/@SSH_PUBLIC_KEY@/g, process.env.SSH_PUBLIC_KEY)
     .replace(/@TARGET_IP@/g, process.env.TARGET_IP)
     .replace(/@UNIQUE_NAME@/g, unique_name)
+    .replace(/@USER@/g, process.env.BUILD_USER_ID)
     .replace(/@DAEMON_MONITOR@/g, "");
 console.log("Data: " + post_data);
 
