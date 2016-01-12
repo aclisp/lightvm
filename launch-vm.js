@@ -30,7 +30,7 @@ var req = https.request(options, (res) => {
     if (res.statusCode != 201) {
         res.on('data', (chunk) => {
             var status = JSON.parse(chunk);
-            throw new Error(status.message)
+            throw new Error(status.message);
         });
     }
     res.on('data', (chunk) => {
@@ -39,17 +39,17 @@ var req = https.request(options, (res) => {
         var count = 0;
         var timer = setInterval(() => {
             count++;
-            if (count > 20) {
+            if (count > 30) {
                 clearInterval(timer);
                 console.log('Timeout: check with sigma admin for details.');
-                throw new Error("Timeout")
+                throw new Error("Timeout");
             }
             checkPod(pod.metadata.name, timer);
         }, 1000);
     });
 });
 req.on('error', (e) => {
-    throw e
+    throw e;
 });
 req.write(post_data);
 req.end();
@@ -67,7 +67,7 @@ function checkPod(name, timer) {
         if (res.statusCode != 200) {
             res.on('data', (chunk) => {
                 var status = JSON.parse(chunk);
-                throw new Error(status.message)
+                throw new Error(status.message);
             });
         }
         res.on('data', (chunk) => {
