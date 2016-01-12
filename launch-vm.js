@@ -1,5 +1,5 @@
-const fs = require('fs');
-const https = require('https');
+var fs = require('fs');
+var https = require('https');
 
 var unique_name = "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" + process.env.SSH_PORT;
 var post_data = fs.readFileSync('lightvm.json', 'utf8');
@@ -26,18 +26,18 @@ var options = {
     rejectUnauthorized: false
 };
 
-var req = https.request(options, (res) => {
+var req = https.request(options, function (res) {
     if (res.statusCode != 201) {
-        res.on('data', (chunk) => {
+        res.on('data', function (chunk) {
             var status = JSON.parse(chunk);
             checkPod(unique_name, null, true, status.message);
         });
     }
-    res.on('data', (chunk) => {
+    res.on('data', function (chunk) {
         var pod = JSON.parse(chunk);
         console.log('Created: phase = ' + pod.status.phase);
         var count = 0;
-        var timer = setInterval(() => {
+        var timer = setInterval(function () {
             count++;
             if (count > 30) {
                 clearInterval(timer);
@@ -48,7 +48,7 @@ var req = https.request(options, (res) => {
         }, 1000);
     });
 });
-req.on('error', (e) => {
+req.on('error', function (e) {
     throw e;
 });
 req.write(post_data);
@@ -63,14 +63,14 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
         auth: 'test:test123',
         rejectUnauthorized: false
     };
-    var req = https.request(options, (res) => {
+    var req = https.request(options, function (res) {
         if (res.statusCode != 200) {
-            res.on('data', (chunk) => {
+            res.on('data', function (chunk) {
                 var status = JSON.parse(chunk);
                 throw new Error(status.message);
             });
         }
-        res.on('data', (chunk) => {
+        res.on('data', function (chunk) {
             var pod = JSON.parse(chunk);
             console.log('Checking: phase = ' + pod.status.phase);
             if (showStatusAndExit) {
@@ -81,7 +81,7 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
                 if (timer) {
                     clearInterval(timer);
                 }
-                console.log(`Done: go to container with "ssh -p ${process.env.SSH_PORT} root@${process.env.TARGET_IP}"`);
+                console.log('Done: go to container with "ssh -p ' + process.env.SSH_PORT + ' root@' + process.env.TARGET_IP);
             }
         });
     });
