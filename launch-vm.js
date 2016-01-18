@@ -1,7 +1,7 @@
 var fs = require('fs');
 var https = require('https');
 
-var unique_name = "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" + process.env.SSH_PORT;
+var unique_name = "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" + process.env.BUILD_NUMBER;
 var post_data = fs.readFileSync('lightvm.json', 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")
@@ -81,6 +81,7 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
                 if (timer) {
                     clearInterval(timer);
                 }
+                console.log('Msg: ' + pod.status.message);
                 console.log('Done: go to container with "ssh -p ' + process.env.SSH_PORT + ' root@' + process.env.TARGET_IP);
             }
         });
