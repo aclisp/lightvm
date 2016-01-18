@@ -3,10 +3,10 @@ var https = require('https');
 
 var images = {
     // image type -> image name
-    "sigma+ubuntu": "lightvm",
-    "sigma+ubuntu+redis": "redis-sdk",
-    "sigma+ubuntu+nodejs": "nodejs-sdk",
-    "sigma+ubuntu+golang": "golang-sdk"
+    "sigma-ubuntu": "lightvm",
+    "sigma-ubuntu-redis": "redis-sdk",
+    "sigma-ubuntu-nodejs": "nodejs-sdk",
+    "sigma-ubuntu-golang": "golang-sdk"
 };
 
 var unique_name = "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" + process.env.BUILD_NUMBER;
