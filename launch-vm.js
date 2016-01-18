@@ -81,8 +81,18 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
                 if (timer) {
                     clearInterval(timer);
                 }
-                console.log('Msg: ' + pod.status.message);
-                console.log('Done: go to container with "ssh -p ' + process.env.SSH_PORT + ' root@' + process.env.TARGET_IP);
+                console.log('Info: ' + pod.status.message);
+                var portMappings = /PortMapping\((.*)\)/.exec(pod.status.message)[1].split(",");
+                var hostSSHPort;
+                for (var i in portMappings) {
+                    var pm = portMappings[i].split("->");
+                    var hostPort = pm[0];
+                    var containerPort = pm[1];
+                    if (containerPort == '22') {
+                        hostSSHPort = hostPort;
+                    }
+                }
+                console.log('Done: go to container with "ssh -p ' + hostSSHPort + ' root@' + process.env.TARGET_IP);
             }
         });
     });
