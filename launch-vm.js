@@ -2,6 +2,7 @@ var fs = require('fs');
 var https = require('https');
 
 var images = {
+    // image type -> image name
     "sigma+ubuntu": "lightvm",
     "sigma+ubuntu+redis": "redis-sdk",
     "sigma+ubuntu+nodejs": "nodejs-sdk",
@@ -12,7 +13,8 @@ var unique_name = "lightvm-" + process.env.TARGET_IP.replace(/\./g, "-") + "-" +
 var post_data = fs.readFileSync('lightvm.json', 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")
-    .replace(/@IMAGE_NAME@/g, images[process.env.IMAGE_NAME])
+    .replace(/@IMAGE_TYPE@/g, process.env.IMAGE)
+    .replace(/@IMAGE_NAME@/g, images[process.env.IMAGE])
     .replace(/@IMAGE_VERSION@/g, process.env.IMAGE_VERSION)
     .replace(/@SSH_PORT@/g, process.env.SSH_PORT)
     .replace(/@CPU_CORE@/g, process.env.CPU_CORE)

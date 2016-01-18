@@ -4,7 +4,8 @@
     "metadata": {
         "name": "@UNIQUE_NAME@",
         "labels": {
-            "user": "@USER@"
+            "user": "@USER@",
+            "type": "@IMAGE_TYPE@"
         }
     },
     "spec": {
