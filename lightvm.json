@@ -8,7 +8,6 @@
         }
     },
     "spec": {
-        "hostNetwork": true,
         "nodeName": "@TARGET_IP@",
         "containers": [
             {
@@ -16,13 +15,12 @@
                 "image": "@REGISTRY@/@IMAGE_NAME@:@IMAGE_VERSION@",
                 "imagePullPolicy": "Always",
                 "args": [
-                    "/sbin/my_init",
-                    "--ssh-port=@SSH_PORT@"
+                    "/sbin/my_init"
                 ],
                 "ports": [
                     {
                         "name": "ssh",
-                        "containerPort": @SSH_PORT@
+                        "containerPort": 22
                     }
                 ],
                 "resources": {
