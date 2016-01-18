@@ -39,6 +39,7 @@ var req = https.request(options, function (res) {
     if (res.statusCode != 201) {
         res.on('data', function (chunk) {
             var status = JSON.parse(chunk);
+            console.log('Failed: ' + status.message);
             checkPod(unique_name, null, true, status.message);
         });
     }
