@@ -28,7 +28,7 @@ post_data = post_data
 var post_obj = JSON.parse(post_data);
 post_obj.spec.replicas = parseInt(process.env.REPLICAS, 10);
 post_data = JSON.stringify(post_obj, null, 2);
-console.log("Data: " + post_data);
+console.log("Request: " + post_data);
 
 var options = {
     hostname: '61.160.36.122',
@@ -42,12 +42,14 @@ var options = {
 var req = https.request(options, function (res) {
     if (res.statusCode != 201) {
         res.on('data', function (chunk) {
+            console.log("Reply: " + chunk);
             var status = JSON.parse(chunk);
             console.log('Failed: ' + status.message);
             checkPod(unique_name, null, true, status.message);
         });
     }
     res.on('data', function (chunk) {
+        console.log("Reply: " + chunk);
         var pod = JSON.parse(chunk);
         console.log('Created: phase = ' + pod.status.phase);
         var count = 0;
