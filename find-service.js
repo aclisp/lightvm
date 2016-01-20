@@ -15,6 +15,7 @@ var options = {
     auth: 'test:test123',
     rejectUnauthorized: false
 };
+console.log(options.path);
 var req = https.request(options, function (res) {
     if (res.statusCode != 200) {
         res.on('data', function (chunk) {
