@@ -26,7 +26,8 @@ post_data = post_data
     .replace(/@DAEMON_MONITOR@/g, "");
 
 var post_obj = JSON.parse(post_data);
-post_obj.spec.replicas = parseInt(process.env.REPLICAS, 10);
+var requiredReplicas = parseInt(process.env.REPLICAS, 10);
+post_obj.spec.replicas = requiredReplicas;
 post_data = JSON.stringify(post_obj, null, 2);
 console.log("Request: " + post_data);
 
@@ -42,25 +43,23 @@ var options = {
 var req = https.request(options, function (res) {
     if (res.statusCode != 201) {
         res.on('data', function (chunk) {
-            console.log("Reply: " + chunk);
             var status = JSON.parse(chunk);
             console.log('Failed: ' + status.message);
-            checkPod(unique_name, null, true, status.message);
+            checkStatus(unique_name, null, true, status.message);
         });
     }
     res.on('data', function (chunk) {
-        console.log("Reply: " + chunk);
-        var pod = JSON.parse(chunk);
-        console.log('Created: phase = ' + pod.status.phase);
+        var obj = JSON.parse(chunk);
+        console.log('Created: current replicas = ' + obj.status.replicas);
         var count = 0;
         var timer = setInterval(function () {
             count++;
             if (count > 30) {
                 clearInterval(timer);
                 console.log('Timeout: check with sigma admin for details.');
-                checkPod(pod.metadata.name, null, true, "Timeout");
+                checkStatus(obj.metadata.name, null, true, "Timeout");
             }
-            checkPod(pod.metadata.name, timer, false, null);
+            checkStatus(obj.metadata.name, timer, false, null);
         }, 1000);
     });
 });
@@ -70,11 +69,11 @@ req.on('error', function (e) {
 req.write(post_data);
 req.end();
 
-function checkPod(name, timer, showStatusAndExit, exitReason) {
+function checkStatus(name, timer, showStatusAndExit, exitReason) {
     var options = {
         hostname: '61.160.36.122',
         port: 443,
-        path: '/api/v1/namespaces/default/pods/' + name,
+        path: '/api/v1/namespaces/default/replicationcontrollers/' + name,
         method: 'GET',
         auth: 'test:test123',
         rejectUnauthorized: false
@@ -87,28 +86,17 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
             });
         }
         res.on('data', function (chunk) {
-            var pod = JSON.parse(chunk);
-            console.log('Checking: phase = ' + pod.status.phase);
+            var obj = JSON.parse(chunk);
+            console.log('Checking: current replicas = ' + obj.status.replicas);
             if (showStatusAndExit) {
-                console.log(JSON.stringify(pod.status, null, 2));
+                console.log(JSON.stringify(obj.status, null, 2));
                 throw new Error('Failed to launch: ' + exitReason);
             }
-            if (pod.status.phase == "Running") {
+            if (obj.status.replicas == requiredReplicas) {
                 if (timer) {
                     clearInterval(timer);
                 }
-                console.log('Info: ' + pod.status.message);
-                var portMappings = /PortMapping\((.*)\)/.exec(pod.status.message)[1].split(",");
-                var hostSSHPort;
-                for (var i in portMappings) {
-                    var pm = portMappings[i].split("->");
-                    var hostPort = pm[0];
-                    var containerPort = pm[1];
-                    if (containerPort == '22') {
-                        hostSSHPort = hostPort;
-                    }
-                }
-                console.log('Done: go to container with "ssh -p ' + hostSSHPort + ' root@' + process.env.TARGET_IP);
+                console.log('Done: next is to do service discovery with service name: ' + process.env.SERVICE_NAME);
             }
         });
     });
