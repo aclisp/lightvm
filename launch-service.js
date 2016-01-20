@@ -10,7 +10,7 @@ var images = {
     "sigma-ubuntu-demo-web-redis-app": "demo-web-redis-app"
 };
 
-var unique_name = "lightvm-" + process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
+var unique_name = "vm-" + process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
 var post_data = fs.readFileSync('lightvm-controller.json', 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")
