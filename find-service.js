@@ -29,7 +29,25 @@ var req = https.request(options, function (res) {
     });
     res.on('end', function () {
         var obj = JSON.parse(body);
-        console.log(JSON.stringify(obj, null, 2));
+        //console.log(JSON.stringify(obj, null, 2));
+        console.log([
+                "INSTANCE",
+                "TYPE",
+                "VERSION",
+                "STATUS",
+                "HOST",
+                "PORT"
+            ].join('\t'));
+        for (var i in obj.items) {
+            var pod = obj.items[i];
+            console.log([
+                pod.metadata.name,
+                pod.metadata.labels.type,
+                pod.metadata.labels.version,
+                pod.status.phase,
+                pod.status.hostIP,
+                pod.status.message].join('\t'));
+        }
     });
 });
 req.end();
