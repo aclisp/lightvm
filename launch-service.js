@@ -27,7 +27,7 @@ post_data = post_data
 
 var post_obj = JSON.parse(post_data);
 post_obj.spec.replicas = parseInt(process.env.REPLICAS, 10);
-post_data = JSON.stringify(post_data, null, 2);
+post_data = JSON.stringify(post_obj, null, 2);
 console.log("Data: " + post_data);
 
 var options = {
