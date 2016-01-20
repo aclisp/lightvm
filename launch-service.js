@@ -47,21 +47,22 @@ var req = https.request(options, function (res) {
             console.log('Failed: ' + status.message);
             checkStatus(unique_name, null, true, status.message);
         });
+    } else {
+        res.on('data', function (chunk) {
+            var obj = JSON.parse(chunk);
+            console.log('Created: current replicas = ' + obj.status.replicas);
+            var count = 0;
+            var timer = setInterval(function () {
+                count++;
+                if (count > 30) {
+                    clearInterval(timer);
+                    console.log('Timeout: check with sigma admin for details.');
+                    checkStatus(obj.metadata.name, null, true, "Timeout");
+                }
+                checkStatus(obj.metadata.name, timer, false, null);
+            }, 1000);
+        });
     }
-    res.on('data', function (chunk) {
-        var obj = JSON.parse(chunk);
-        console.log('Created: current replicas = ' + obj.status.replicas);
-        var count = 0;
-        var timer = setInterval(function () {
-            count++;
-            if (count > 30) {
-                clearInterval(timer);
-                console.log('Timeout: check with sigma admin for details.');
-                checkStatus(obj.metadata.name, null, true, "Timeout");
-            }
-            checkStatus(obj.metadata.name, timer, false, null);
-        }, 1000);
-    });
 });
 req.on('error', function (e) {
     throw e;
