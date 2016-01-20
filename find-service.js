@@ -23,9 +23,13 @@ var req = https.request(options, function (res) {
             throw new Error(status.message);
         });
     }
+    var body = '';
     res.on('data', function (chunk) {
-        var obj = JSON.parse(chunk);
-        console.log(obj);
+        body += chunk;
+    });
+    res.on('end', function () {
+        var obj = JSON.parse(body);
+        console.log(JSON.stringify(obj, null, 2));
     });
 });
 req.end();
