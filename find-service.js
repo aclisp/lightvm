@@ -15,7 +15,7 @@ var options = {
     auth: 'test:test123',
     rejectUnauthorized: false
 };
-console.log(options.path);
+console.log("Query: " + options.path);
 var req = https.request(options, function (res) {
     if (res.statusCode != 200) {
         res.on('data', function (chunk) {
@@ -32,12 +32,13 @@ var req = https.request(options, function (res) {
         //console.log(JSON.stringify(obj, null, 2));
         console.log([
                 "INSTANCE",
-                "TYPE",
+                "IMAGE",
                 "VERSION",
                 "STATUS",
                 "HOST",
                 "PORT"
             ].join('\t'));
+
         for (var i in obj.items) {
             var pod = obj.items[i];
             console.log([
