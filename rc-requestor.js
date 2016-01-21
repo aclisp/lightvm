@@ -4,7 +4,7 @@ exports.requestAndCheck = requestAndCheck;
 
 function requestAndCheck(unique_name, options, post_data, requiredReplicas) {
     var req = https.request(options, function (res) {
-        if (res.statusCode != 201 || res.statusCode != 200) {
+        if (res.statusCode != 201 && res.statusCode != 200) {
             res.on('data', function (chunk) {
                 var status = JSON.parse(chunk);
                 console.log('Failed: ' + status.message);
