@@ -4,7 +4,7 @@ exports.requestAndCheck = requestAndCheck;
 
 function requestAndCheck(unique_name, options, post_data, requiredReplicas) {
     var req = https.request(options, function (res) {
-        if (res.statusCode != 201) {
+        if (res.statusCode != 201 || res.statusCode != 200) {
             res.on('data', function (chunk) {
                 var status = JSON.parse(chunk);
                 console.log('Failed: ' + status.message);
@@ -13,7 +13,7 @@ function requestAndCheck(unique_name, options, post_data, requiredReplicas) {
         } else {
             res.on('data', function (chunk) {
                 var obj = JSON.parse(chunk);
-                console.log('Confirmed: current replicas = ' + obj.status.replicas);
+                console.log('Checking: current replicas = ' + obj.status.replicas);
                 var count = 0;
                 var timer = setInterval(function () {
                     count++;
@@ -55,7 +55,7 @@ function checkStatus(name, timer, showStatusAndExit, exitReason, requiredReplica
             console.log('Checking: current replicas = ' + obj.status.replicas);
             if (showStatusAndExit) {
                 console.log(JSON.stringify(obj.status, null, 2));
-                throw new Error('Failed to launch: ' + exitReason);
+                throw new Error('Failed: ' + exitReason);
             }
             if (obj.status.replicas == requiredReplicas) {
                 if (timer) {
