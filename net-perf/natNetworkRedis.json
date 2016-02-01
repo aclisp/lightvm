@@ -1,0 +1,45 @@
+{
+    "kind": "Pod",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "nat-network-redis"
+    },
+    "spec": {
+        "hostNetwork": false,
+        "nodeName": "61.160.36.74",
+        "containers": [
+            {
+                "name": "nat-network-redis",
+                "image": "61.160.36.122:8080/redis:3.0.6",
+                "args": [
+                    "redis-server",
+                    "--port",
+                    "12000"
+                ],
+                "ports": [
+                    {
+                        "containerPort": 12000
+                    }
+                ],
+                "resources": {
+                    "limits": {
+                        "cpu": "1",
+                        "memory": "2Gi"
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "name": "data",
+                        "mountPath": "/data"
+                    }
+                ]
+            }
+        ],
+        "volumes": [
+            {
+                "name": "data",
+                "emptyDir": {}
+            }
+        ]
+    }
+}
