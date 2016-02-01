@@ -97,7 +97,7 @@ function checkPod(name, timer, showStatusAndExit, exitReason) {
                     var pm = portMappings[i].split("->");
                     var hostPort = pm[0];
                     var containerPort = pm[1];
-                    if (containerPort == '22') {
+                    if (containerPort == '22/TCP') {
                         hostSSHPort = hostPort;
                     }
                 }
