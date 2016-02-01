@@ -22,6 +22,10 @@
                     {
                         "name": "ssh",
                         "containerPort": 22
+                    },
+                    {
+                        "name": "http",
+                        "containerPort": 8080
                     }
                 ],
                 "resources": {
