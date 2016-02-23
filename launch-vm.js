@@ -6,10 +6,11 @@ var images = {
     "sigma-ubuntu": "lightvm",
     "sigma-ubuntu-redis": "redis-sdk",
     "sigma-ubuntu-nodejs": "nodejs-sdk",
-    "sigma-ubuntu-golang": "golang-sdk"
+    "sigma-ubuntu-golang": "golang-sdk",
+    "mysql": "mysql"
 };
 
-var unique_name = "vm-" + process.env.BUILD_USER_ID + "-" + process.env.INSTANCE_NAME;
+var unique_name = process.env.BUILD_USER_ID + "-" + process.env.INSTANCE_NAME;
 var post_data = fs.readFileSync('lightvm.json', 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")

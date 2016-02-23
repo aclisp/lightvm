@@ -8,10 +8,11 @@ var images = {
     "sigma-ubuntu-redis": "redis-sdk",
     "sigma-ubuntu-nodejs": "nodejs-sdk",
     "sigma-ubuntu-golang": "golang-sdk",
-    "sigma-ubuntu-demo-web-redis-app": "demo-web-redis-app"
+    "sigma-ubuntu-demo-web-redis-app": "demo-web-redis-app",
+    "mysql": "mysql"
 };
 
-var unique_name = "vm-" + process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
+var unique_name = process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
 var post_data = fs.readFileSync('lightvm-controller.json', 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")
