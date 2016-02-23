@@ -7,7 +7,6 @@ var images = {
     "sigma-ubuntu-redis": "redis-sdk",
     "sigma-ubuntu-nodejs": "nodejs-sdk",
     "sigma-ubuntu-golang": "golang-sdk",
-    "mysql": "mysql"
 };
 
 var unique_name = process.env.BUILD_USER_ID + "-" + process.env.INSTANCE_NAME;
