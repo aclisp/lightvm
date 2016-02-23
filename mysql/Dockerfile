@@ -3,7 +3,7 @@ FROM 61.160.36.122:8080/lightvm:latest
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
-RUN mkdir /docker-entrypoint-initdb.d
+RUN mkdir /mysql-entrypoint-initdb.d
 
 # FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
 # File::Basename
@@ -39,8 +39,5 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
 
 VOLUME /var/lib/mysql
 
-COPY docker-entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-
-EXPOSE 3306
-CMD ["mysqld"]
+RUN mkdir /etc/service/mysql
+COPY mysql-entrypoint.sh /etc/service/mysql/run
