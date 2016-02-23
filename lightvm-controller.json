@@ -28,6 +28,7 @@
             },
             "spec": {
                 "nodeSelector": {
+                    "project": "test",
                     "region": "@TARGET_REGION@"
                 },
                 "containers": [{
