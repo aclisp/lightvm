@@ -13,7 +13,7 @@ var images = {
 };
 
 var unique_name = process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
-var post_data = fs.readFileSync('lightvm-controller.json', 'utf8');
+var post_data = fs.readFileSync(process.env.SERVICE_SPEC, 'utf8');
 post_data = post_data
     .replace(/@REGISTRY@/g, "61.160.36.122:8080")
     .replace(/@IMAGE_TYPE@/g, process.env.IMAGE)

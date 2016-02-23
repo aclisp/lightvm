@@ -1,0 +1,81 @@
+{
+    "kind": "ReplicationController",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "@UNIQUE_NAME@",
+        "labels": {
+            "user": "@USER@",
+            "type": "@IMAGE_TYPE@",
+            "name": "@UNIQUE_NAME@",
+            "version": "@IMAGE_VERSION@"
+        }
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "user": "@USER@",
+            "name": "@UNIQUE_NAME@",
+            "version": "@IMAGE_VERSION@"
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "user": "@USER@",
+                    "type": "@IMAGE_TYPE@",
+                    "name": "@UNIQUE_NAME@",
+                    "version": "@IMAGE_VERSION@"
+                }
+            },
+            "spec": {
+                "nodeSelector": {
+                    "project": "test",
+                    "region": "@TARGET_REGION@"
+                },
+                "containers": [{
+                    "name": "@UNIQUE_NAME@",
+                    "image": "@REGISTRY@/@IMAGE_NAME@:@IMAGE_VERSION@",
+                    "args": [
+                        "/sbin/my_init"
+                    ],
+                    "ports": [{
+                        "name": "ssh",
+                        "containerPort": 22
+                    }, {
+                        "name": "mysql",
+                        "containerPort": 3306
+                    }],
+                    "resources": {
+                        "limits": {
+                            "cpu": "@CPU_CORE@",
+                            "memory": "@MEMORY_G@Gi"
+                        }
+                    },
+                    "volumeMounts": [{
+                        "name": "persist",
+                        "mountPath": "/persist"
+                    }, {
+                        "name": "mysql-data",
+                        "mountPath": "/var/lib/mysql"
+                    }],
+                    "env": [{
+                        "name": "DAEMON_MONITOR",
+                        "value": "@DAEMON_MONITOR@"
+                    }, {
+                        "name": "SSH_PUBLIC_KEY",
+                        "value": "@SSH_PUBLIC_KEY@"
+                    }, {
+                        "name": "MYSQL_ROOT_PASSWORD",
+                        "value": "changeme"
+                    }]
+                }],
+                "volumes": [{
+                    "name": "persist",
+                    "emptyDir": {}
+                }, {
+                    "name": "mysql-data",
+                    "emptyDir": {}
+                }]
+            }
+        }
+    }
+}
