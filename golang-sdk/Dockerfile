@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		mercurial \
 		openssh-client \
 		subversion \
-		\
+		lsof \
+        tree \
 		procps \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -25,12 +26,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		make \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV GOLANG_VERSION 1.5.2
-ENV GOLANG_DOWNLOAD_URL http://golangtc.com/static/go/$GOLANG_VERSION/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA1 cae87ed095e8d94a81871281d35da7829bd1234e
+ENV GOLANG_VERSION 1.6
+ENV GOLANG_DOWNLOAD_URL http://golangtc.com/static/go/go$GOLANG_VERSION/go$GOLANG_VERSION.linux-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA256 5470eac05d273c74ff8bac7bef5bad0b5abbd1c4052efbdbc8db45332e836b0b
 
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
-	&& echo "$GOLANG_DOWNLOAD_SHA1  golang.tar.gz" | sha1sum -c - \
+	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
 	&& tar -C /usr/local -xzf golang.tar.gz \
 	&& rm golang.tar.gz
 
