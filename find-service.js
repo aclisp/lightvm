@@ -1,7 +1,7 @@
 var https = require('https');
 var querystring = require('querystring');
 
-var unique_name = "vm-" + process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
+var unique_name = process.env.BUILD_USER_ID + "-" + process.env.SERVICE_NAME;
 var query = {
     labelSelector: "user=" + process.env.BUILD_USER_ID + "," +
                    "name=" + unique_name
