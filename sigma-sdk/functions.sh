@@ -158,3 +158,67 @@ function revert_replication_controller () {
     update_replication_controller NAME=$NAME IMAGE=$LAST_IMAGE CONFIG=$LAST_CONFIG
 }
 
+function read_pod () {
+    if (( $# != 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    http_get pods/$1
+}
+
+function update_pod () {
+    if (( $# < 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    local NAME IMAGE CONFIG  # reset first
+    local "$@"
+
+    [[ -z $NAME ]] && fatal "NAME is not set."
+    local SPEC=$(read_pod $NAME)
+    local LAST_IMAGE=$(echo $SPEC | jq --raw-output '.spec.containers[0].image')
+    local LAST_CONFIG=$(echo $SPEC | jq --raw-output '.spec.containers[1].image')
+    [[ -z $IMAGE ]] && IMAGE=$LAST_IMAGE
+    [[ -z $CONFIG ]] && CONFIG=$LAST_CONFIG
+
+    local PATCH="{
+        \"metadata\": {
+            \"annotations\": {
+                \"last-image\": \"$LAST_IMAGE\",
+                \"last-config\": \"$LAST_CONFIG\"
+            }
+        },
+        \"spec\": {
+            \"containers\": [{
+                \"name\": \"${NAME%-*}\",
+                \"image\": \"$IMAGE\"
+            }, {
+                \"name\": \"data-volume\",
+                \"image\": \"$CONFIG\"
+            }]}}"
+    http_patch pods/$NAME "$PATCH"
+}
+
+function delete_pod () {
+    if (( $# != 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    http_delete pods/$1
+}
+
+function revert_pod () {
+    if (( $# != 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    local NAME=$1
+    local SPEC=$(read_pod $NAME)
+    local LAST_IMAGE=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-image"]')
+    local LAST_CONFIG=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-config"]')
+    if [[ $LAST_IMAGE == "null" ]]; then
+        fatal "Can not revert."
+    fi
+
+    update_pod NAME=$NAME IMAGE=$LAST_IMAGE CONFIG=$LAST_CONFIG
+}
