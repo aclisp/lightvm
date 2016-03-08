@@ -1,21 +1,24 @@
-. settings.conf
+set -eo pipefail
 
-CURL_OPTIONS="--verbose --show-error --silent --insecure --user $API_USER:$API_PASSWORD"
+source common-parameters.conf
+source settings.conf
+
+CURL_OPTIONS="--show-error --silent --insecure --user $API_USER:$API_PASSWORD"
 
 function get_stack () {
-   STACK=""
-   # to avoid noise we start with 1 to skip get_stack caller
-   local i
-   local stack_size=${#FUNCNAME[1]}
-   for (( i=1; i<$stack_size ; i++ )); do
-      local func="${FUNCNAME[$i]}"
-      [ x$func = x ] && func=MAIN
-      local linen="${BASH_LINENO[(( i - 1 ))]}"
-      local src="${BASH_SOURCE[$i]}"
-      [ x"$src" = x ] && src=non_file_source
+    STACK=""
+    # to avoid noise we start with 1 to skip get_stack caller
+    local i
+    local stack_size=${#FUNCNAME[1]}
+    for (( i=1; i<$stack_size ; i++ )); do
+        local func="${FUNCNAME[$i]}"
+        [ x$func = x ] && func=MAIN
+        local linen="${BASH_LINENO[(( i - 1 ))]}"
+        local src="${BASH_SOURCE[$i]}"
+        [ x"$src" = x ] && src=non_file_source
 
-      STACK+='\n'"    at "$func"("$src":"$linen")"
-   done
+        STACK+='\n'"    at "$func"("$src":"$linen")"
+    done
 }
 
 function fatal () {
@@ -64,22 +67,96 @@ function http_patch () {
 }
 
 function create_replication_controller () {
-    if (( $# != 3 )); then
+    if (( $# != 4 )); then
         fatal "Invalid arguments."
     fi
 
-    local CLUSTER_NAME=$1
+    local NAME=$1
     local IMAGE=$2
     local CONFIG=$3
+    local SSH_PUBLIC_KEY=$4
 
-    local SPEC=$(jq ".metadata.name=\"$CLUSTER_NAME\" \
-       |.spec.selector[\"managed-by\"]=\"$CLUSTER_NAME\" \
-       |.spec.template.metadata.labels[\"managed-by\"]=\"$CLUSTER_NAME\" \
-       |.spec.template.spec.containers[0].name=\"$CLUSTER_NAME\" \
+    local SPEC=$(jq ".metadata.name=\"$NAME\" \
+       |.spec.selector[\"managed-by\"]=\"$NAME\" \
+       |.spec.template.metadata.labels[\"managed-by\"]=\"$NAME\" \
+       |.spec.template.spec.containers[0].name=\"$NAME\" \
        |.spec.template.spec.containers[0].image=\"$IMAGE_REGISTRY/$IMAGE\" \
        |.spec.template.spec.containers[1].image=\"$IMAGE_REGISTRY/$CONFIG\" \
+       |.spec.template.spec.containers[0].env[0].value=\"$SSH_PUBLIC_KEY\" \
        " replication-controller.json)
 
     http_post replicationcontrollers "$SPEC"
+}
+
+function read_replication_controller () {
+    if (( $# != 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    http_get replicationcontrollers/$1
+}
+
+function update_replication_controller () {
+    if (( $# < 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    local NAME IMAGE CONFIG REPLICAS  # reset first
+    local "$@"
+
+    [[ -z $NAME ]] && fatal "NAME is not set."
+    local SPEC=$(read_replication_controller $NAME)
+    local LAST_IMAGE=$(echo $SPEC | jq --raw-output '.spec.template.spec.containers[0].image')
+    local LAST_CONFIG=$(echo $SPEC | jq --raw-output '.spec.template.spec.containers[1].image')
+    local LAST_REPLICAS=$(echo $SPEC | jq --raw-output '.spec.replicas')
+    [[ -z $IMAGE ]] && IMAGE=$LAST_IMAGE
+    [[ -z $CONFIG ]] && CONFIG=$LAST_CONFIG
+    [[ -z $REPLICAS ]] && REPLICAS=$LAST_REPLICAS
+
+    local PATCH="{
+        \"metadata\": {
+            \"annotations\": {
+                \"last-image\": \"$LAST_IMAGE\",
+                \"last-config\": \"$LAST_CONFIG\",
+                \"last-replicas\": \"$LAST_REPLICAS\"
+            }
+        },
+        \"spec\": {
+            \"replicas\": $REPLICAS,
+            \"template\": {
+                \"spec\": {
+                    \"containers\": [{
+                        \"name\": \"$NAME\",
+                        \"image\": \"$IMAGE\"
+                    }, {
+                        \"name\": \"data-volume\",
+                        \"image\": \"$CONFIG\"
+                    }]}}}}"
+    http_patch replicationcontrollers/$NAME "$PATCH"
+}
+
+function delete_replication_controller () {
+    if (( $# != 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    http_delete replicationcontrollers/$1
+}
+
+function revert_replication_controller () {
+    if (( $# != 1 )); then
+        fatal "Invalid arguments."
+    fi
+
+    local NAME=$1
+    local SPEC=$(read_replication_controller $NAME)
+    local LAST_IMAGE=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-image"]')
+    local LAST_CONFIG=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-config"]')
+    local LAST_REPLICAS=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-replicas"]')
+    if [[ $LAST_IMAGE == "null" ]]; then
+        fatal "Can not revert."
+    fi
+
+    update_replication_controller NAME=$NAME IMAGE=$LAST_IMAGE CONFIG=$LAST_CONFIG REPLICAS=$LAST_REPLICAS
 }
 
