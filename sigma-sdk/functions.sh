@@ -117,8 +117,7 @@ function update_replication_controller () {
         \"metadata\": {
             \"annotations\": {
                 \"last-image\": \"$LAST_IMAGE\",
-                \"last-config\": \"$LAST_CONFIG\",
-                \"last-replicas\": \"$LAST_REPLICAS\"
+                \"last-config\": \"$LAST_CONFIG\"
             }
         },
         \"spec\": {
@@ -152,11 +151,10 @@ function revert_replication_controller () {
     local SPEC=$(read_replication_controller $NAME)
     local LAST_IMAGE=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-image"]')
     local LAST_CONFIG=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-config"]')
-    local LAST_REPLICAS=$(echo $SPEC | jq --raw-output '.metadata.annotations["last-replicas"]')
     if [[ $LAST_IMAGE == "null" ]]; then
         fatal "Can not revert."
     fi
 
-    update_replication_controller NAME=$NAME IMAGE=$LAST_IMAGE CONFIG=$LAST_CONFIG REPLICAS=$LAST_REPLICAS
+    update_replication_controller NAME=$NAME IMAGE=$LAST_IMAGE CONFIG=$LAST_CONFIG
 }
 
