@@ -1,0 +1,124 @@
+{
+    "kind": "ReplicationController",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "@CLUSTER_NAME@"
+    },
+    "spec": {
+        "replicas": 2,
+        "selector": {
+            "managed-by": "@CLUSTER_NAME@"
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "managed-by": "@CLUSTER_NAME@"
+                },
+                "annotations": {
+                    "USER_DEFINED_1": "VALUE_1",
+                    "USER_DEFINED_2": "VALUE_2"
+                }
+            },
+            "spec": {
+                "nodeSelector": {
+                    "project": "bamboo"
+                },
+                "containers": [{
+                    "name": "@CLUSTER_NAME@",
+                    "image": "@IMAGE_REGISTRY@/@IMAGE_NAME@:@IMAGE_VERSION@",
+                    "ports": [{
+                        "name": "ssh",
+                        "containerPort": 22
+                    }, {
+                        "name": "app",
+                        "containerPort": 3306
+                    }],
+                    "resources": {
+                        "limits": {
+                            "cpu": "1",
+                            "memory": "2Gi"
+                        }
+                    },
+                    "volumeMounts": [{
+                        "name": "shared-volume",
+                        "mountPath": "/etc/shared-volume"
+                    }, {
+                        "name": "hostinfo",
+                        "mountPath": "/etc/hostinfo",
+                        "readOnly": true
+                    }, {
+                        "name": "reflection",
+                        "mountPath": "/etc/reflection",
+                        "readOnly": true
+                    }, {
+                        "name": "persist",
+                        "mountPath": "/persist"
+                    }, {
+                        "name": "app-data",
+                        "mountPath": "/var/lib/app"
+                    }],
+                    "env": [{
+                        "name": "SSH_PUBLIC_KEY",
+                        "value": "@SSH_PUBLIC_KEY@"
+                    }, {
+                        "name": "USER_DEFINED",
+                        "value": "changeme"
+                    }]
+                }, {
+                    "name": "data-volume",
+                    "image": "@IMAGE_REGISTRY@/@CONFIG_NAME@:@CONFIG_VERSION@",
+                    "volumeMounts": [{
+                        "name": "shared-volume",
+                        "mountPath": "/shared-volume"
+                    }]
+                }],
+                "volumes": [{
+                    "name": "shared-volume",
+                    "emptyDir": {
+                        "medium": ""
+                    }
+                }, {
+                    "name": "hostinfo",
+                    "hostPath": {
+                        "path": "/home/dspeak/yyms"
+                    }
+                }, {
+                    "name": "reflection",
+                    "downwardAPI": {
+                        "items": [{
+                            "path": "annotations",
+                            "fieldRef": {
+                                "fieldPath": "metadata.annotations"
+                            }
+                        }, {
+                            "path": "labels",
+                            "fieldRef": {
+                                "fieldPath": "metadata.labels"
+                            }
+                        }, {
+                            "path": "instancename",
+                            "fieldRef": {
+                                "fieldPath": "metadata.name"
+                            }
+                        }, {
+                            "path": "projectname",
+                            "fieldRef": {
+                                "fieldPath": "metadata.namespace"
+                            }
+                        }]
+                    }
+                }, {
+                    "name": "persist",
+                    "emptyDir": {
+                        "medium": ""
+                    }
+                }, {
+                    "name": "app-data",
+                    "emptyDir": {
+                        "medium": ""
+                    }
+                }]
+            }
+        }
+    }
+}
