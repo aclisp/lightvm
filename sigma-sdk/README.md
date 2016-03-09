@@ -1,5 +1,17 @@
 # SDK Usage
 
+## Define template
+
+Modify `replication-controller.json`:
+
+* `replicas` How many replicas to run?
+* `nodeSelector` Where to deploy?
+* `volumes` Where to store persistent data?
+* `ports` What ports to expose?
+* `limits` The maximum allowed CPU and memory?
+* `volumeMounts` The volumes mount path inside container?
+* `env` The environment variables required by the docker image?
+
 ## Load library
 
 ```sh
