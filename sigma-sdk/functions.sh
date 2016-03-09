@@ -43,7 +43,7 @@ function http_post () {
     local OBJ=$1
     local SPEC=$2
 
-    curl $CURL_OPTIONS --request POST --data-binary "$SPEC" $(api_endpoint $OBJ)
+    curl $CURL_OPTIONS -w "%{http_code} POST %{url_effective}\\n" --request POST --data-binary "$SPEC" $(api_endpoint $OBJ)
 }
 
 function http_get () {
@@ -56,14 +56,14 @@ function http_get () {
 function http_delete () {
     local OBJ=$1
 
-    curl $CURL_OPTIONS --request DELETE $(api_endpoint $OBJ)
+    curl $CURL_OPTIONS -w "%{http_code} DELETE %{url_effective}\\n" --request DELETE $(api_endpoint $OBJ)
 }
 
 function http_patch () {
     local OBJ=$1
     local SPEC=$2
 
-    curl $CURL_OPTIONS --request PATCH --header "Content-Type: application/strategic-merge-patch+json" --data-binary "$SPEC" $(api_endpoint $OBJ)
+    curl $CURL_OPTIONS -w "%{http_code} PATCH %{url_effective}\\n" --request PATCH --header "Content-Type: application/strategic-merge-patch+json" --data-binary "$SPEC" $(api_endpoint $OBJ)
 }
 
 function create_replication_controller () {
