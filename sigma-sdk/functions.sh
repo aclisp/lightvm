@@ -158,6 +158,27 @@ function revert_replication_controller () {
     update_replication_controller NAME=$NAME IMAGE=$LAST_IMAGE CONFIG=$LAST_CONFIG
 }
 
+function create_pod () {
+    if (( $# != 4 )); then
+        fatal "Invalid arguments."
+    fi
+
+    local NAME=$1
+    local IMAGE=$2
+    local CONFIG=$3
+    local SSH_PUBLIC_KEY=$4
+
+    local SPEC=$(jq ".metadata.generateName=\"$NAME-\" \
+       |.metadata.labels[\"managed-by\"]=\"$NAME\" \
+       |.spec.containers[0].name=\"$NAME\" \
+       |.spec.containers[0].image=\"$IMAGE_REGISTRY/$IMAGE\" \
+       |.spec.containers[1].image=\"$IMAGE_REGISTRY/$CONFIG\" \
+       |.spec.containers[0].env[0].value=\"$SSH_PUBLIC_KEY\" \
+       " pod.json)
+
+    http_post pods "$SPEC"
+}
+
 function read_pod () {
     if (( $# != 1 )); then
         fatal "Invalid arguments."

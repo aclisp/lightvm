@@ -5,7 +5,7 @@
         "name": "@CLUSTER_NAME@"
     },
     "spec": {
-        "replicas": 2,
+        "replicas": 3,
         "selector": {
             "managed-by": "@CLUSTER_NAME@"
         },
@@ -21,7 +21,7 @@
             },
             "spec": {
                 "nodeSelector": {
-                    "project": "bamboo"
+                    "project": "test"
                 },
                 "containers": [{
                     "name": "@CLUSTER_NAME@",
