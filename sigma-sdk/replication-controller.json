@@ -35,8 +35,8 @@
                     }],
                     "resources": {
                         "limits": {
-                            "cpu": "1",
-                            "memory": "2Gi"
+                            "cpu": "0.05",
+                            "memory": "100Mi"
                         }
                     },
                     "volumeMounts": [{
