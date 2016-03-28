@@ -1,7 +1,7 @@
 #!/bin/bash
 source functions.sh
 
-RETRY=60
+RETRY=6
 INTERVAL=5
 
 while (( $RETRY > 0 )); do
@@ -18,5 +18,5 @@ done
 
 INSTANCE_LIST=$(http_get pods managed-by=$CLUSTER_NAME | jq --raw-output '.items[] | .metadata.name')
 for instance in $INSTANCE_LIST; do
-    bash wait-instance.sh $instance
+    bash wait-instance.sh $instance "Pending"
 done

@@ -10,7 +10,7 @@ INSTANCE_NAME=$1
 INSTANCE_SPEC=$(read_pod $INSTANCE_NAME)
 CURRENT_IMAGE=$(echo $INSTANCE_SPEC | jq --raw-output '.spec.containers[0].image')
 if [[ $CURRENT_IMAGE != $SIGMA_PAUSE_IMAGE ]]; then
-    echo "Can not start. Aborted."
+    echo "Already started."
     exit 1
 fi
 

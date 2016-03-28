@@ -1,5 +1,3 @@
-set -eo pipefail
-
 source common-parameters.conf
 source settings.conf
 
