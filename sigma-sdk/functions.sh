@@ -64,6 +64,13 @@ function http_patch () {
     curl $CURL_OPTIONS -w "%{http_code} PATCH %{url_effective}\\n" --request PATCH --header "Content-Type: application/strategic-merge-patch+json" --data-binary "$SPEC" $(api_endpoint $OBJ)
 }
 
+function http_put () {
+    local OBJ=$1
+    local SPEC=$2
+
+    curl $CURL_OPTIONS -w "%{http_code} PUT %{url_effective}\\n" --request PUT --data-binary "$SPEC" $(api_endpoint $OBJ)
+}
+
 function create_replication_controller () {
     if (( $# != 4 )); then
         fatal "Invalid arguments."
