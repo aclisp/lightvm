@@ -44,7 +44,15 @@
                         "mountPath": "/etc/shared-volume"
                     }, {
                         "name": "hostinfo",
-                        "mountPath": "/etc/hostinfo",
+                        "mountPath": "/home/dspeak/yyms",
+                        "readOnly": true
+                    }, {
+                        "name": "localtime",
+                        "mountPath": "/etc/localtime",
+                        "readOnly": true
+                    }, {
+                        "name": "yy-repos",
+                        "mountPath": "/usr/local/i386",
                         "readOnly": true
                     }, {
                         "name": "reflection",
@@ -81,6 +89,16 @@
                     "name": "hostinfo",
                     "hostPath": {
                         "path": "/home/dspeak/yyms"
+                    }
+                }, {
+                    "name": "localtime",
+                    "hostPath": {
+                        "path": "/etc/localtime"
+                    }
+                }, {
+                    "name": "yy-repos",
+                    "hostPath": {
+                        "path": "/usr/local/i386"
                     }
                 }, {
                     "name": "reflection",
