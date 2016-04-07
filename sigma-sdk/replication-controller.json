@@ -55,6 +55,9 @@
                         "mountPath": "/usr/local/i386",
                         "readOnly": true
                     }, {
+                        "name": "yymp-agent-sock",
+                        "mountPath": "/tmp/yymp.agent.sock"
+                    }, {
                         "name": "reflection",
                         "mountPath": "/etc/reflection",
                         "readOnly": true
@@ -99,6 +102,11 @@
                     "name": "yy-repos",
                     "hostPath": {
                         "path": "/usr/local/i386"
+                    }
+                }, {
+                    "name": "yymp-agent-sock",
+                    "hostPath": {
+                        "path": "/tmp/yymp.agent.sock"
                     }
                 }, {
                     "name": "reflection",
