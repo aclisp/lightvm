@@ -2,7 +2,7 @@ FROM 61.160.36.122:8080/lightvm:latest
 
 ENV JDK_VERSION 8u77
 
-COPY jdk-8u77-linux-x64.tar.gz /opt/
+COPY jdk-$JDK_VERSION-linux-x64.tar.gz /opt/
 RUN tar -xzf "/opt/jdk-$JDK_VERSION-linux-x64.tar.gz" -C /opt \
   && rm "/opt/jdk-$JDK_VERSION-linux-x64.tar.gz"
 
