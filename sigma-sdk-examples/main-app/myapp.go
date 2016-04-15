@@ -10,15 +10,17 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
+	"fmt"
+	"net/http"
+	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+	hostname, _ := os.Hostname()
+	fmt.Fprintf(w, "Reply from %q, request is %q\n", hostname, r.URL.Path[1:])
 }
 
 func main() {
-    http.HandleFunc("/", handler)
-    http.ListenAndServe(":3306", nil)
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":3306", nil)
 }
