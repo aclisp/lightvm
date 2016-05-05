@@ -4,7 +4,8 @@ ENV HADOOP_VERSION 2.7.2
 
 COPY hadoop-$HADOOP_VERSION.tar.gz /opt/
 RUN tar -xzf "/opt/hadoop-$HADOOP_VERSION.tar.gz" -C /opt \
-  && rm "/opt/hadoop-$HADOOP_VERSION.tar.gz"
+  && rm "/opt/hadoop-$HADOOP_VERSION.tar.gz" \
+  && mv /opt/hadoop-$HADOOP_VERSION /opt/hadoop
 
-ENV HADOOP_HOME /opt/hadoop-$HADOOP_VERSION
-ENV PATH $HADOOP_HOME/bin:$PATH
+ENV HADOOP_PREFIX /opt/hadoop
+ENV PATH $HADOOP_PREFIX/bin:$PATH
