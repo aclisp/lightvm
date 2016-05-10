@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]; then
+if [[ $# -eq 0 ]]; then
     >&2 echo "Need parameters: INSTANCE_NAME"
     exit 1
 fi
@@ -29,4 +29,5 @@ if [[ -z $OUTER_PORT ]]; then
 fi
 
 echo "ssh -p $OUTER_PORT root@$INSTANCE_NODE"
-exec ssh -p $OUTER_PORT root@$INSTANCE_NODE
+shift
+exec ssh -p $OUTER_PORT root@$INSTANCE_NODE "$@"
