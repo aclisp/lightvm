@@ -9,6 +9,11 @@ source functions.sh
 
 INSTANCE_NAME=$1
 INSTANCE_SPEC=$(read_pod $INSTANCE_NAME)
+if [[ $(echo $INSTANCE_SPEC | jq --raw-output '.kind') != "Pod" ]]; then
+    >&2 echo "$INSTANCE_NAME is not found"
+    exit 1
+fi
+
 INSTANCE_NODE=$(echo $INSTANCE_SPEC | jq --raw-output '.spec.nodeName')
 if [[ -z $INSTANCE_NODE ]]; then
     >&2 echo "Can not get node for instance $INSTANCE_NAME"
