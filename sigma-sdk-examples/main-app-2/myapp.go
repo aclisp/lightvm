@@ -11,16 +11,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	hostname, _ := os.Hostname()
+	hostname, err := os.Hostname()
+	if err != nil {
+		fmt.Fprintf(w, "Reply with error: %v\n", err)
+		return
+	}
 	fmt.Fprintf(w, "Reply from %q, request is %q sent by %q\n", hostname, r.URL.Path[1:], r.RemoteAddr)
 }
 
 func main() {
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":3306", nil)
+	log.Fatal(http.ListenAndServe(":3306", nil))
 }
