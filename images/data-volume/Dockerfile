@@ -1,5 +1,5 @@
 # Need some basic commands from busybox
-FROM busybox
+FROM ubuntu:14.04
 ADD pause /
 ADD entrypoint.sh /
 ADD postStart.sh /

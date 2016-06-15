@@ -5,7 +5,7 @@ LOG=/shared-volume/init-script.log
 
 fatal() {
     >&2 echo " !!! $(date -Is) $1"
-    exit 1
+    exit 0
 }
 
 log() {
